@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.octo.project.startproject.entities.IOTDevice;
+import com.octo.project.startproject.entities.Device;
 
 @Repository
-public interface DeviceRepository extends JpaRepository<IOTDevice, Integer> {
+public interface DeviceRepository extends JpaRepository<Device, Integer> {
 	
 	/**
 	 * 
@@ -18,6 +18,6 @@ public interface DeviceRepository extends JpaRepository<IOTDevice, Integer> {
 	 * @param textAgain
 	 * @return
 	 */
-	List<IOTDevice> findByNameContainingOrModelContaining(String text, String textAgain);
+	List<Device> findByNameContainingOrModelContaining(String text, String textAgain);
 
 }

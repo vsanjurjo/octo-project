@@ -2,7 +2,9 @@ package com.octo.project.startproject.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,8 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.octo.project.startproject.entities.IOTDevice;
-import com.octo.project.startproject.mocks.IOTDeviceMockedData;
+import com.octo.project.startproject.entities.Device;
+import com.octo.project.startproject.repositories.DeviceRepository;
 
 /**
  * 
@@ -21,18 +23,19 @@ import com.octo.project.startproject.mocks.IOTDeviceMockedData;
  */
 @RestController
 public class DeviceController {
-
-	IOTDeviceMockedData iotDeviceMockedData = IOTDeviceMockedData.getIntance();
+	
+	@Autowired
+	DeviceRepository deviceRepository;
 
 	/**
 	 * 
 	 * Returns a List of all the device on database
 	 * 
-	 * @return List<IOTDevice>
+	 * @return List<Device>
 	 */
 	@GetMapping("/device")
-	public List<IOTDevice> index() {
-		return iotDeviceMockedData.fetchIOTDevice();
+	public List<Device> index() {
+		return deviceRepository.findAll();
 	}
 
 	/**
@@ -40,12 +43,12 @@ public class DeviceController {
 	 * Returns a device from database by its id
 	 * 
 	 * @param id
-	 * @return IOTDevice
+	 * @return Optional<Device>
 	 */
 	@GetMapping("/device/{id}")
-	public IOTDevice show(@PathVariable String id) {
+	public Optional<Device> show(@PathVariable String id) {
 		int deviceId = Integer.parseInt(id);
-		return iotDeviceMockedData.getIOTDeviceById(deviceId);
+		return deviceRepository.findById(deviceId);
 	}
 	
 	/**
@@ -53,12 +56,12 @@ public class DeviceController {
 	 * Search devices by a search term
 	 * 
 	 * @param body
-	 * @return List<IOTDevice>
+	 * @return List<Device>
 	 */
 	@PostMapping("device/search")
-	public List<IOTDevice> search(@RequestBody Map<String, String> body){
+	public List<Device> search(@RequestBody Map<String, String> body){
 		String searchTerm = body.get("text");
-		return iotDeviceMockedData.searchDevices(searchTerm);
+		return deviceRepository.findByNameContainingOrModelContaining(searchTerm, searchTerm);
 	}
 
 	/**
@@ -66,14 +69,13 @@ public class DeviceController {
 	 * Creates a device in the database
 	 * 
 	 * @param body
-	 * @return IOTDevice
+	 * @return Device
 	 */
 	@PostMapping("device")
-	public IOTDevice create(@RequestBody Map<String, String> body) {
-		int id = Integer.parseInt(body.get("id"));
+	public Device create(@RequestBody Map<String, String> body) {
 		String name = body.get("name");
 		String model = body.get("model");
-		return iotDeviceMockedData.createIOTDevice(id, name, model);
+		return deviceRepository.save(new Device(name,model));
 	}
 	
 	/**
@@ -82,14 +84,19 @@ public class DeviceController {
 	 * 
 	 * @param id
 	 * @param body
-	 * @return IOTDevice
+	 * @return Device
 	 */
 	@PutMapping("device/{id}")
-	public IOTDevice update(@PathVariable String id, @RequestBody Map<String, String> body) {
+	public Device update(@PathVariable String id, @RequestBody Map<String, String> body) {
 		int deviceId = Integer.parseInt(id);
-		String name = body.get("name");
-		String model = body.get("model");
-		return iotDeviceMockedData.updateIOTDevice(deviceId, name, model);
+		
+		Optional<Device> optionalDevice = deviceRepository.findById(deviceId);
+		
+		Device device = optionalDevice.get();
+		device.setName(body.get("name"));
+		device.setModel(body.get("model"));
+		
+		return deviceRepository.save(device);
 	}
 	
 	/**
@@ -102,7 +109,8 @@ public class DeviceController {
 	@DeleteMapping("device/{id}")
 	public boolean delete(@PathVariable String id) {
 		int deviceId = Integer.parseInt(id);
-		return iotDeviceMockedData.delete(deviceId);
+		deviceRepository.deleteById(deviceId);
+		return true;
 	}
 
 }

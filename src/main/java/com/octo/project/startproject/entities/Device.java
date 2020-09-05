@@ -1,14 +1,29 @@
 package com.octo.project.startproject.entities;
 
-public class IOTDevice {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Device {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
+	
 	private String name;
 	private String model;
 
-	public IOTDevice() {
+	public Device() {
+	}
+	
+	public Device(String name, String model) {
+		this.setName(name);
+		this.setModel(model);
 	}
 
-	public IOTDevice(int id, String name, String model) {
+	public Device(int id, String name, String model) {
 		this.setId(id);
 		this.setName(name);
 		this.setModel(model);
@@ -40,7 +55,7 @@ public class IOTDevice {
 
 	@Override
 	public String toString() {
-		return "IOTDevice [id=" + id + ", name=" + name + ", model=" + model + "]";
+		return "Device [id=" + id + ", name=" + name + ", model=" + model + "]";
 	}
 	
 }
