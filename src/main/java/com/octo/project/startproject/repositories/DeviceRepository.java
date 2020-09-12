@@ -9,10 +9,10 @@ import com.octo.project.startproject.entities.Device;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Integer> {
-	
+
 	/**
 	 * 
-	 * custom query to search a device by name or model
+	 * Custom query to search a device by name or model
 	 * 
 	 * @param text
 	 * @param textAgain
